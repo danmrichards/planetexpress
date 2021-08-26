@@ -1,0 +1,63 @@
+run:
+  concurrency: 4
+  deadline: 5m
+
+linters-settings:
+  govet:
+    check-shadowing: false
+  gocyclo:
+    min-complexity: 20
+  maligned:
+    suggest-new: true
+  dupl:
+    threshold: 100
+  goconst:
+    min-len: 2
+    min-occurrences: 4
+  gocritic:
+    enabled-checks:
+      - paramTypeCombine
+
+linters:
+  enable-all: true
+  disable:
+    - dupl
+    - gas
+    - errcheck
+    - gofmt
+    - gosimple
+    - interfacer
+    - megacheck
+    - maligned
+    - structcheck
+    - staticcheck
+    - unconvert
+    - unparam
+    - varcheck
+    - lll
+    - prealloc
+    - gochecknoglobals
+    - gochecknoinits
+    - scopelint
+    - funlen
+    - godox
+    - forbidigo
+    - godot
+    - gofumpt
+    - wsl
+    - exhaustivestruct
+    - nlreturn
+    - paralleltest
+    - testpackage
+    - gomnd
+    - wrapcheck
+
+issues:
+  exclude:
+    - .*_string\.go
+    - don't use underscores in Go names
+    - don't use ALL_CAPS in Go names
+    - unless it's in another file for this package
+    - at least one file in a package should have a package comment
+  exclude-use-default: false
+  max-same-issues: 0

@@ -9,19 +9,19 @@ type AllocatedPackage struct {
 	Package `yaml:",inline"`
 	// Embedded fields due to inline allOf schema
 	// Unique ID for the allocated package
-	PackageId *string `json:"package_id,omitempty"`
+	PackageId string `json:"package_id"`
 }
 
 // Represents an error
 type Error struct {
 	// A human-readable explanation specific to this occurrence of the problem. Like title, this field’s value can be localized.
-	Description *string `json:"description,omitempty"`
+	Description string `json:"description"`
 
 	// The HTTP status code applicable to this problem, expressed as a string value.
-	Status *string `json:"status,omitempty"`
+	Status string `json:"status"`
 
 	// A short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization.
-	Title *string `json:"title,omitempty"`
+	Title string `json:"title"`
 }
 
 // Represents a package to be loaded onto the ship
@@ -33,33 +33,33 @@ type Package struct {
 // Represents the current state of the ships cargo bay. All fields are represented in package units.
 type Ship struct {
 	// The amount of allocated, but unloaded, package units
-	Allocated *int `json:"allocated,omitempty"`
+	Allocated int `json:"allocated"`
 
 	// The available space for packages, determined by the total capacity, loaded and allocated packages
-	Available *int `json:"available,omitempty"`
+	Available int `json:"available"`
 
 	// The total capacity of the cargo bay
-	Capacity *int `json:"capacity,omitempty"`
+	Capacity int `json:"capacity"`
 
 	// The number of loaded package units
-	Loaded *int `json:"loaded,omitempty"`
+	Loaded int `json:"loaded"`
 }
 
 // AllocatePackage defines model for AllocatePackage.
 type AllocatePackage struct {
 	// Represents a package allocated in the ship cargo bay
-	Data *AllocatedPackage `json:"data,omitempty"`
+	Data AllocatedPackage `json:"data"`
 }
 
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
-	Errors *[]Error `json:"errors,omitempty"`
+	Errors []Error `json:"errors"`
 }
 
 // ShipStatus defines model for ShipStatus.
 type ShipStatus struct {
 	// Represents the current state of the ships cargo bay. All fields are represented in package units.
-	Data *Ship `json:"data,omitempty"`
+	Data Ship `json:"data"`
 }
 
 // PackageAllocateJSONBody defines parameters for PackageAllocate.

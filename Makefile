@@ -61,6 +61,10 @@ darwin-viewbuilder:
 lint:
 	golangci-lint run ./cmd/... ./internal/...
 
+.PHONY: test
+test:
+	go test -v -race -count=1 ./...
+
 .PHONY: deps
 deps:
 	go mod verify && \

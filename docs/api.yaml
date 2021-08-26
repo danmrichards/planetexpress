@@ -6,10 +6,8 @@ info:
     This is the API for the Planet Express package shipping service. It provides endpoints that provide functionality to plan, manage and analyse package shipments.
 
     The capacity of the ship and the size of packages are represented as uniform "package units".
-servers:
-  - url: 'http://localhost:3000'
 paths:
-  /ship/status:
+  /v1/ship/status:
     get:
       summary: Ship status
       tags: []
@@ -23,7 +21,7 @@ paths:
         '500':
           $ref: '#/components/responses/ErrorResponse'
     parameters: []
-  /package/allocate:
+  /v1/package/allocate:
     post:
       summary: Allocate Package
       operationId: package-allocate
@@ -46,7 +44,7 @@ paths:
                   size: 10
         description: The size of package to allocate
     parameters: []
-  '/package/{package_id}/load':
+  '/v1/package/{package_id}/load':
     parameters:
       - schema:
           type: string
@@ -65,7 +63,7 @@ paths:
         '500':
           $ref: '#/components/responses/ErrorResponse'
       description: Loads a package onto the ship
-  '/package/{package_id}/unload':
+  '/v1/package/{package_id}/unload':
     put:
       summary: Unload Package
       tags: []
@@ -109,6 +107,11 @@ components:
         available:
           type: integer
           description: 'The available space for packages, determined by the total capacity, loaded and allocated packages'
+      required:
+        - capacity
+        - loaded
+        - allocated
+        - available
     Package:
       title: Package
       type: object
@@ -124,6 +127,11 @@ components:
     Error:
       title: Error
       type: object
+      description: Represents an error
+      example:
+        - status: '500'
+          title: Could not load package
+          description: 'Unable to load package, insufficient capacity'
       properties:
         status:
           type: string
@@ -134,11 +142,10 @@ components:
         description:
           type: string
           description: 'A human-readable explanation specific to this occurrence of the problem. Like title, this field’s value can be localized.'
-      description: Represents an error
-      example:
-        - status: '500'
-          title: Could not load package
-          description: 'Unable to load package, insufficient capacity'
+      required:
+        - status
+        - title
+        - description
     AllocatedPackage:
       allOf:
         - $ref: '#/components/schemas/Package'
@@ -147,6 +154,8 @@ components:
             package_id:
               type: string
               description: Unique ID for the allocated package
+          required:
+            - package_id
       example:
         - size: 10
           id: 9518faf4-066e-11ec-bf4a-00155dccdb81
@@ -161,6 +170,8 @@ components:
             properties:
               data:
                 $ref: '#/components/schemas/Ship'
+            required:
+              - data
           examples:
             example-1:
               value:
@@ -180,6 +191,8 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/Error'
+            required:
+              - errors
           examples:
             example-1:
               value:
@@ -196,6 +209,8 @@ components:
             properties:
               data:
                 $ref: '#/components/schemas/AllocatedPackage'
+            required:
+              - data
           examples:
             example-1:
               value:
