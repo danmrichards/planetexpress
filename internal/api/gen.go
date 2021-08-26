@@ -6,5 +6,5 @@ import (
 	_ "github.com/deepmap/oapi-codegen/pkg/codegen"
 )
 
-//go:generate ../../scripts/genapi.sh ../../docs/api.yaml types types.go
-//go:generate ../../scripts/genapi.sh ../../docs/api.yaml spec spec.go
+//go:generate ../../scripts/genapi.sh ../../docs/planetexpress.openapi.yml types types.go
+//go:generate ../../scripts/genapi.sh ../../docs/planetexpress.openapi.yml spec spec.go
