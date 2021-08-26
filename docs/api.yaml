@@ -1,0 +1,204 @@
+openapi: 3.0.0
+info:
+  title: Planet Express
+  version: '1.0'
+  description: |-
+    This is the API for the Planet Express package shipping service. It provides endpoints that provide functionality to plan, manage and analyse package shipments.
+
+    The capacity of the ship and the size of packages are represented as uniform "package units".
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /ship/status:
+    get:
+      summary: Ship status
+      tags: []
+      operationId: ship-status
+      description: Returns the current status of the ship cargo bay
+      responses:
+        '200':
+          $ref: '#/components/responses/ShipStatus'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+    parameters: []
+  /package/allocate:
+    post:
+      summary: Allocate Package
+      operationId: package-allocate
+      responses:
+        '201':
+          $ref: '#/components/responses/AllocatePackage'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+      description: Allocates the given package units in the cargo bay and returns a unique ID for the allocation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Package'
+            examples:
+              example-1:
+                value:
+                  size: 10
+        description: The size of package to allocate
+    parameters: []
+  '/package/{package_id}/load':
+    parameters:
+      - schema:
+          type: string
+        name: package_id
+        in: path
+        required: true
+        description: ID of the package to load
+    put:
+      summary: Load Package
+      operationId: package-load
+      responses:
+        '204':
+          description: No Content
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+      description: Loads a package onto the ship
+  '/package/{package_id}/unload':
+    put:
+      summary: Unload Package
+      tags: []
+      responses:
+        '204':
+          description: No Content
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ErrorResponse'
+      operationId: package-unload
+      description: Unloads a package from the ship
+    parameters:
+      - schema:
+          type: string
+        name: package_id
+        in: path
+        required: true
+        description: ID of the package to unload
+components:
+  schemas:
+    Ship:
+      title: Ship
+      type: object
+      description: Represents the current state of the ships cargo bay. All fields are represented in package units.
+      example:
+        - capacity: 100
+          loaded: 50
+          allocated: 20
+          available: 30
+      properties:
+        capacity:
+          type: integer
+          description: The total capacity of the cargo bay
+        loaded:
+          type: integer
+          description: The number of loaded package units
+        allocated:
+          type: integer
+          description: 'The amount of allocated, but unloaded, package units'
+        available:
+          type: integer
+          description: 'The available space for packages, determined by the total capacity, loaded and allocated packages'
+    Package:
+      title: Package
+      type: object
+      description: Represents a package to be loaded onto the ship
+      properties:
+        size:
+          type: integer
+          description: The size of the package in package units
+      example:
+        - size: 10
+      required:
+        - size
+    Error:
+      title: Error
+      type: object
+      properties:
+        status:
+          type: string
+          description: 'The HTTP status code applicable to this problem, expressed as a string value.'
+        title:
+          type: string
+          description: 'A short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization.'
+        description:
+          type: string
+          description: 'A human-readable explanation specific to this occurrence of the problem. Like title, this field’s value can be localized.'
+      description: Represents an error
+      example:
+        - status: '500'
+          title: Could not load package
+          description: 'Unable to load package, insufficient capacity'
+    AllocatedPackage:
+      allOf:
+        - $ref: '#/components/schemas/Package'
+        - type: object
+          properties:
+            package_id:
+              type: string
+              description: Unique ID for the allocated package
+      example:
+        - size: 10
+          id: 9518faf4-066e-11ec-bf4a-00155dccdb81
+      description: Represents a package allocated in the ship cargo bay
+  responses:
+    ShipStatus:
+      description: The status of the ship's cargo bay
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/Ship'
+          examples:
+            example-1:
+              value:
+                data:
+                  capacity: 100
+                  loaded: 50
+                  allocated: 20
+                  available: 30
+    ErrorResponse:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+          examples:
+            example-1:
+              value:
+                errors:
+                  - status: '500'
+                    title: Could not load package
+                    description: 'Unable to load package, insufficient capacity'
+    AllocatePackage:
+      description: The result of allocating a package in the ship cargo bay
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/AllocatedPackage'
+          examples:
+            example-1:
+              value:
+                data:
+                  size: 10
+                  id: 9518faf4-066e-11ec-bf4a-00155dccdb81
