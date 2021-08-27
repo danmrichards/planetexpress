@@ -1,22 +1,17 @@
-version: "3.9"
+version: "3.7"
 services:
-
   redis:
     image: redis:6.2-alpine
     ports:
       - "6379:6379"
-    deploy:
-      restart_policy:
-        condition: on-failure
-
   db:
     image: postgres:13.4-alpine
     ports:
       - "5432:5432"
     environment:
+      - POSTGRES_USER=bender
       - POSTGRES_PASSWORD=benderisgreat
+      - POSTGRES_DB=planetexpress
     volumes:
-      - data:/var/lib/postgresql/data
-
-volumes:
-  data:
+      - ./data:/var/lib/postgresql/data
+      - ./postgres:/docker-entrypoint-initdb.d
