@@ -7,20 +7,33 @@ import (
 
 	"github.com/danmrichards/planetexpress/internal/api/handler"
 	"github.com/danmrichards/planetexpress/internal/http"
+	"github.com/danmrichards/planetexpress/internal/services/events"
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
 )
 
-var bind string
+var (
+	bind        string
+	redisAddr   string
+	eventStream string
+)
 
 const shutdownTimeout = 5 * time.Second
 
 func main() {
-	flag.StringVar(&bind, "", "127.0.0.1:5000", "the ip:port to bind the API server to")
+	flag.StringVar(&bind, "bind", "127.0.0.1:5000", "the ip:port to bind the API server to")
+	flag.StringVar(&redisAddr, "redis-addr", "127.0.0.1:6379", "the ip:port of the Redis server")
+	flag.StringVar(&eventStream, "event-stream", "packages", "the name of the event stream")
 	flag.Parse()
 
 	r := mux.NewRouter()
-	if err := handler.Init(r); err != nil {
+	evtSvc := events.NewRedisService(
+		redis.NewClient(&redis.Options{Addr: redisAddr}),
+		eventStream,
+	)
+
+	if err := handler.Init(r, evtSvc); err != nil {
 		log.Fatalf("could not setup API handler: %v", err)
 	}
 

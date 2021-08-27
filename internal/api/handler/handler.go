@@ -8,13 +8,17 @@ import (
 	"github.com/danmrichards/planetexpress/internal/api"
 	"github.com/danmrichards/planetexpress/internal/api/middleware"
 	"github.com/danmrichards/planetexpress/internal/api/response"
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
-type handler struct{}
+type handler struct {
+	evtSvc   EventService
+	pkgIDGen pkgIDFunc
+}
 
 // Init initialises a new API handler using the given router.
-func Init(r *mux.Router) error {
+func Init(r *mux.Router, evtSvc EventService) error {
 	mw, err := validateAPIRequestsMiddleware()
 	if err != nil {
 		return fmt.Errorf("validation middleware: %w", err)
@@ -23,7 +27,10 @@ func Init(r *mux.Router) error {
 	sr := r.PathPrefix("/v1").Subrouter()
 	r.Use(mw)
 
-	h := &handler{}
+	h := &handler{
+		evtSvc:   evtSvc,
+		pkgIDGen: uuid.NewString,
+	}
 
 	sr.Path("/ship/status").Methods(http.MethodGet).HandlerFunc(h.shipStatus)
 	sr.Path("/package/allocate").Methods(http.MethodPost).HandlerFunc(h.packageAllocate)

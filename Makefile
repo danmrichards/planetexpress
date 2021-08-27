@@ -70,6 +70,6 @@ deps:
 	go mod verify && \
 	go mod tidy
 
-.PHONY: genapi
-genapi:
+.PHONY: generate
+generate:
 	go generate -v ./...

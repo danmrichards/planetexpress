@@ -9,6 +9,12 @@ import (
 	"github.com/danmrichards/planetexpress/internal/api"
 )
 
+// WriteDefaultStatusError handles writing a proper error response with
+// a default detail message.
+func WriteDefaultStatusError(w http.ResponseWriter, status int) {
+	WriteError(w, status, http.StatusText(status), http.StatusText(status))
+}
+
 // WriteError handles writing a proper error response.
 func WriteError(w http.ResponseWriter, status int, title, detail string) {
 	msg, err := errorResponse(status, title, detail)
