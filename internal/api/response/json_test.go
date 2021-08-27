@@ -1,27 +1,27 @@
 package response
 
 import (
+	"io"
 	"net/http"
+	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestWriteJSON(t *testing.T) {
-	type args struct {
-		w    http.ResponseWriter
-		data interface{}
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := WriteJSON(tt.args.w, tt.args.data); (err != nil) != tt.wantErr {
-				t.Errorf("WriteJSON() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+	w := httptest.NewRecorder()
+
+	assert.NoError(t, WriteJSON(w, map[string]interface{}{
+		"foo": "bar",
+	}))
+
+	res := w.Result()
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+
+	body, err := io.ReadAll(res.Body)
+	defer res.Body.Close()
+	assert.NoError(t, err)
+
+	assert.JSONEq(t, `{"foo": "bar"}`, string(body))
 }

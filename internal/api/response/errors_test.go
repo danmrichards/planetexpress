@@ -1,72 +1,48 @@
 package response
 
 import (
-	"encoding/json"
+	"io"
 	"net/http"
-	"reflect"
+	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestWriteDefaultStatusError(t *testing.T) {
-	type args struct {
-		w      http.ResponseWriter
-		status int
-	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-		})
-	}
-}
-
 func TestWriteError(t *testing.T) {
-	type args struct {
-		w      http.ResponseWriter
-		status int
-		title  string
-		detail string
-	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-		})
-	}
+	w := httptest.NewRecorder()
+
+	WriteError(w, http.StatusInternalServerError, "title", "description")
+
+	res := w.Result()
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+
+	body, err := io.ReadAll(res.Body)
+	defer res.Body.Close()
+	assert.NoError(t, err)
+
+	assert.JSONEq(
+		t,
+		`{"errors": [{"description": "description", "status": "500", "title": "title"}]}`,
+		string(body),
+	)
 }
 
-func Test_errorResponse(t *testing.T) {
-	type args struct {
-		status int
-		title  string
-		desc   string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    json.RawMessage
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := errorResponse(tt.args.status, tt.args.title, tt.args.desc)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("errorResponse() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("errorResponse() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+func TestWriteDefaultStatusError(t *testing.T) {
+	w := httptest.NewRecorder()
+
+	WriteDefaultStatusError(w, http.StatusInternalServerError)
+
+	res := w.Result()
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+
+	body, err := io.ReadAll(res.Body)
+	defer res.Body.Close()
+	assert.NoError(t, err)
+
+	assert.JSONEq(
+		t,
+		`{"errors": [{"description": "Internal Server Error", "status": "500", "title": "Internal Server Error"}]}`,
+		string(body),
+	)
 }
