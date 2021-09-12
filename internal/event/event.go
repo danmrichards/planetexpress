@@ -1,7 +1,6 @@
 package event
 
 import (
-	"fmt"
 	"strconv"
 )
 
@@ -67,7 +66,7 @@ func FromValues(id string, values map[string]interface{}) (*PackageEvent, error)
 	}
 	size, err := strconv.Atoi(sizeStr)
 	if err != nil {
-		return nil, fmt.Errorf("parse size: %w", err)
+		return nil, err
 	}
 
 	return &PackageEvent{

@@ -8,7 +8,7 @@ import (
 	"log"
 
 	"github.com/danmrichards/planetexpress/internal/services/events"
-	"github.com/danmrichards/planetexpress/internal/services/package_events"
+	"github.com/danmrichards/planetexpress/internal/services/packageevents"
 	"github.com/go-redis/redis/v8"
 	_ "github.com/lib/pq"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
@@ -43,7 +43,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	pkgEvtSvc := package_events.NewSQLService(db)
+	pkgEvtSvc := packageevents.NewSQLService(db)
 
 	// We need the latest package event to use as the starting point for the
 	// stream listener.

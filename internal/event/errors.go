@@ -6,7 +6,7 @@ import "fmt"
 type MissingValueError string
 
 func (m MissingValueError) Error() string {
-	return fmt.Sprintf("missing value: %q", string(m))
+	return fmt.Sprintf("missing value %q", string(m))
 }
 
 // ValueTypeError is returned when an expected event value is of the wrong type.

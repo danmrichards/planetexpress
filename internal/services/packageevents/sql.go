@@ -1,4 +1,4 @@
-package package_events
+package packageevents
 
 import (
 	"database/sql"
