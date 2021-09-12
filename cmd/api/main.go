@@ -28,10 +28,8 @@ func main() {
 	flag.Parse()
 
 	r := mux.NewRouter()
-	evtSvc := events.NewRedisService(
-		redis.NewClient(&redis.Options{Addr: redisAddr}),
-		eventStream,
-	)
+	rc := redis.NewClient(&redis.Options{Addr: redisAddr})
+	evtSvc := events.NewRedisService(rc, eventStream)
 
 	if err := handler.Init(r, evtSvc); err != nil {
 		log.Fatalf("could not setup API handler: %v", err)
@@ -45,4 +43,6 @@ func main() {
 	if err := srv.Serve(ctx); err != nil {
 		log.Fatalf("could not start API server: %v", err)
 	}
+
+	rc.Close() //nolint:errcheck
 }
