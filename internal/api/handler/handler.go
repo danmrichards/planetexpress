@@ -14,11 +14,12 @@ import (
 
 type handler struct {
 	evtSvc   EventService
+	shipSvc  ShipService
 	pkgIDGen pkgIDFunc
 }
 
 // Init initialises a new API handler using the given router.
-func Init(r *mux.Router, evtSvc EventService) error {
+func Init(r *mux.Router, evtSvc EventService, shipSvc ShipService) error {
 	mw, err := validateAPIRequestsMiddleware()
 	if err != nil {
 		return fmt.Errorf("validation middleware: %w", err)
@@ -29,6 +30,7 @@ func Init(r *mux.Router, evtSvc EventService) error {
 
 	h := &handler{
 		evtSvc:   evtSvc,
+		shipSvc:  shipSvc,
 		pkgIDGen: uuid.NewString,
 	}
 

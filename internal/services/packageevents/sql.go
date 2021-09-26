@@ -64,7 +64,7 @@ func (s *SQLService) UpdateShipStatus(evt *event.PackageEvent) (err error) {
 
 func (s *SQLService) allocatePackage(size int) error {
 	_, err := s.db.Exec(
-		`UPDATE ship_status SET allocated = allocated + $1, available = available - $1`,
+		"UPDATE ship_status SET allocated = allocated + $1, available = available - $1",
 		size,
 	)
 	if err != nil {
@@ -76,7 +76,7 @@ func (s *SQLService) allocatePackage(size int) error {
 
 func (s *SQLService) loadPackage(size int) error {
 	_, err := s.db.Exec(
-		`UPDATE ship_status SET loaded = loaded + $1, allocated = allocated - $1`,
+		"UPDATE ship_status SET loaded = loaded + $1, allocated = allocated - $1",
 		size,
 	)
 	if err != nil {
@@ -88,7 +88,7 @@ func (s *SQLService) loadPackage(size int) error {
 
 func (s *SQLService) unloadPackage(size int) error {
 	_, err := s.db.Exec(
-		`UPDATE ship_status SET loaded = loaded - $1, available = available + $1`,
+		"UPDATE ship_status SET loaded = loaded - $1, available = available + $1",
 		size,
 	)
 	if err != nil {
