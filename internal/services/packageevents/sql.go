@@ -47,3 +47,53 @@ VALUES ($1, $2, $3, $4)`,
 
 	return nil
 }
+
+// UpdateShipStatus updates the status of the ship based on the received event.
+func (s *SQLService) UpdateShipStatus(evt *event.PackageEvent) (err error) {
+	switch evt.Typ {
+	case event.PackageAllocate:
+		return s.allocatePackage(evt.PackageSize)
+	case event.PackageLoad:
+		return s.loadPackage(evt.PackageSize)
+	case event.PackageUnload:
+		return s.unloadPackage(evt.PackageSize)
+	default:
+		return UnknownEventError(evt.Typ)
+	}
+}
+
+func (s *SQLService) allocatePackage(size int) error {
+	_, err := s.db.Exec(
+		`UPDATE ship_status SET allocated = allocated + $1, available = available - $1`,
+		size,
+	)
+	if err != nil {
+		return fmt.Errorf("allocate package: %w", err)
+	}
+
+	return nil
+}
+
+func (s *SQLService) loadPackage(size int) error {
+	_, err := s.db.Exec(
+		`UPDATE ship_status SET loaded = loaded + $1, allocated = allocated - $1`,
+		size,
+	)
+	if err != nil {
+		return fmt.Errorf("load package: %w", err)
+	}
+
+	return nil
+}
+
+func (s *SQLService) unloadPackage(size int) error {
+	_, err := s.db.Exec(
+		`UPDATE ship_status SET loaded = loaded - $1, available = available + $1`,
+		size,
+	)
+	if err != nil {
+		return fmt.Errorf("unload package: %w", err)
+	}
+
+	return nil
+}

@@ -50,7 +50,6 @@ func (m *SwaggerValidationMiddleware) Middleware(next http.Handler) http.Handler
 		if handled := m.before(w, r); handled {
 			return
 		}
-		// TODO: validateResponse
 		next.ServeHTTP(w, r)
 	})
 }

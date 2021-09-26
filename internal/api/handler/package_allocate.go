@@ -17,6 +17,10 @@ func (h handler) packageAllocate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: Check current state of ship to see if can be allocated.
+	// State of ship is equal to the current snapshot of state plus any newer
+	// events.
+
 	packageID := h.pkgIDGen()
 
 	// Dispatch allocate event.
